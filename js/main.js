@@ -1,14 +1,19 @@
 
 // Capturar los elementos del DOM
-const enviarFormulario = document.querySelector('#enviar')
 const formulario = document.querySelector('#formulario');
-const titulo = document.querySelector('#titulo');
-//const campoDirector = document.querySelector('#director');
-//const campoAnio = document.querySelector('#anio');
+const genero = document.querySelector('#genero');
+const filtrar = document.querySelector('#filtrar');
+const cajaPelis = document.querySelector('#cajaPelis');
+const listaErrores = document.querySelector('#listaErrores');
+const mensajeTabla = document.querySelector('#mensajeTabla');
+
+const fragment=document.createDocumentFragment()
+
 
 //Array peliculas, almacen general
 
 let arrayPelis = [];
+let arrayGeneros=['Terror','Comedia','Acción', 'Romántica']
 
 //Array películas filtradas
 
@@ -51,70 +56,121 @@ const eligeGenero = () => {
 
 //Funcion que captura y valide los datos de formulario retorna el objeto de la pelicula se disparada por el submit del formualario
 
-let objValidar = {
-    titulo: false,
-    director: false,
-    anio: false
-};
 
 
 formulario.addEventListener('submit', (ev) => {
     ev.preventDefault();
     validar();
+    pintarTabla()
 
 });
 
+filtrar.addEventListener('change',(ev)=>{
+    const filtro=ev.target.value;
+    const arrayFiltrados= arrayPelis.filter((item)=>item.genero==filtro)
+    console.log(arrayFiltrados)
+
+    pintarTabla(arrayFiltrados)
+})
+
+
+const pintarSelect=(...array)=>{
+    array.forEach((item)=>{
+        const opcion=document.createElement('OPTION')
+        opcion.value=item
+        opcion.text=item
+
+        fragment.append(opcion)
+
+    })
+
+   return fragment
+
+}
+
 const validar = () => {
+
+    const regExp={
+        titulo:/^.{2,}$/ig,
+        director:/^[a-zÁ-ü]{2,}$/i,
+        anio:/^[\d]{4}$/
+    }
 
     let date = new Date()
     let year = date.getFullYear()
 
-    let titulo = document.forms["formulario"]["titulo"].value;
-    let director = document.forms["formulario"]["director"].value;
-    let anio = document.forms["formulario"]["anio"].value;
+    let titulo = formulario["titulo"].value;
+    let director = formulario["director"].value;
+    let anio = formulario["anio"].value;
+    let valorGenero = formulario["genero"].value;
 
+    let errores=''
 
-
-    let arrayValidar = Object.values(objValidar);
-    console.log(arrayValidar)
-    //console.log(titulo,director,anio)
-
-    titulo == ''
-
-    if (isNaN(titulo) && titulo.trim().length > 0) {
-        objValidar.titulo = true
+    if (!regExp.titulo.test(titulo)) {
+        errores+='<li>Introduzca un título correcto</li>'
     };
 
-    if (isNaN(director) && director.trim().length > 0) {
-        objValidar.director = true
+    if (!regExp.director.test(director)) {
+        errores+='<li>Introduzca un director válido</li>'
     };
 
-    if (!isNaN(anio) && anio < year && anio > 1800) {
-        objValidar.anio = true
+    if (!regExp.anio.test(anio) || (anio > year || anio < 1800)) {
+        errores+='<li>Introduzca un año entre el 1800 y la fecha actual</li>'
     };
 
-    arrayValidar = Object.values(objValidar);
+    if (valorGenero=='Seleccionar Género') {
+        errores+='<li>selecciona un genero</li>'
+    };
 
+   
 
-    const valida = arrayValidar.findIndex(item => item == false);
+    if (errores === '') {
 
-    if (valida === -1) {
+        const objPeli={
+            director,
+            titulo,
+            anio,
+            genero:valorGenero,
+        }
 
+        almacenarPelis(objPeli)
+        listaErrores.innerHTML=''
+        formulario.reset()
 
-        console.log({ titulo });
-        console.log({ director });
-        console.log({ anio });
-        let arrayPelis = [];
-        arrayPelis.push(titulo, director, anio);
-        console.log(arrayPelis)
-
-        console.log("todo esta bien");
-
+    }else{
+        listaErrores.innerHTML=errores
     };
 
 };
 
+const almacenarPelis=(objPeli)=>{
+    arrayPelis.push(objPeli);
+    filtrar.removeAttribute('disabled')
+}
 
+
+const pintarTabla=(array=arrayPelis)=>{
+    cajaPelis.innerHTML=''
+    if(array.length==0){
+        mensajeTabla.textContent=' No ha peliculas que mostrar'
+    }else{
+        array.forEach((item)=>{
+            const fila=document.createElement('TR')
+            fila.innerHTML=`<td>${item.titulo}</td>
+                             <td>${item.director}</td>
+                             <td>${item.anio}</td>
+                             <td>${item.genero}</td>`
+     
+             fragment.append(fila)
+         })
+     
+         cajaPelis.append(fragment)
+     
+    }
+
+   
+
+}
 // Función que almacene el objeto de la peli en array se llama desde la función captura y recibe el objeto como argumanto
 /*function(objetoDeLaPelicula) {
     objeto.push(arrayPelis)
@@ -122,8 +178,8 @@ const validar = () => {
 
 //Función Pintar Tabla recibe en array que tiene que pintar en invocada despues de la función almacenar - y con el evento change del select del filtro
 
-
-
+genero.append(pintarSelect('Seleccionar Género',...arrayGeneros))
+filtrar.append(pintarSelect('Mostrar Todas',...arrayGeneros))
 
 
 

@@ -46,15 +46,9 @@
 
 		<div class="form-group">
 			<label for="genero">Genero</label>
-			<select id="genero">
-				<option value="seleccionar">Selecciona genero</option>
-				<option value="Terror">Terror</option>
-				<option value="Acción" >Acción</option>
-				<option value="Comedia">Comedia</option>
-				<option value="Romántica">Romántica</option>
-			</select>
+			<select id="genero"></select>
 		</div>
-
+		<ul id="listaErrores"></ul>
 		<input type="submit" id='enviar' class="btn btn-primary">
 	</form>
 <hr  class="my-5">
@@ -64,17 +58,11 @@
 
 			<form class="form-group float-right" id="formFiltrar">
 				<label for="filtrar">Filtrar</label>
-				<select id="filtrar" disabled>
-					<option value="filtrarGenero">Mostrar todas las películas</option>
-					<option value="Terror">Terror</option>
-					<option value="Acción" >Acción</option>
-					<option value="Comedia">Comedia</option>
-					<option value="Romántica">Romántica</option>
-				</select>
+				<select id="filtrar" disabled ></select>
 			</form>
 
 		</div>
-
+	<p id="mensajeTabla"></p>
 	<table  class="table text-center table-striped">
 		<thead>
 			<tr>
@@ -82,7 +70,6 @@
 				<th>Director</th>
 				<th>Año</th>
 				<th>Genero</th>
-				
 			</tr>
 		</thead>
 		<tbody id='cajaPelis'>
